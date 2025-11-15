@@ -1,0 +1,11 @@
+streamlit
+pandas
+requests
+pydeck
+plotly
+numpy
+Twilio
+tensorflow
+pykrige
+pyproj
+scikit-learn
