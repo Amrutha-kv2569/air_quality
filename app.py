@@ -6,9 +6,9 @@ import pydeck as pdk
 import plotly.express as px
 from datetime import datetime, timedelta
 # NOTE: krigging library needs to be available in your environment for Kriging tab to work.
-# from krigging import perform_kriging_correct
+from krigging import perform_kriging_correct
 # NOTE: geopandas (gpd) library needs to be available for Kriging tab to work.
-# import geopandas as gpd
+import geopandas as gpd
 
 # ==========================
 # Mock function for missing imports (REMOVE THIS BLOCK IF KRIGGING/GEOPANDAS IS INSTALLED)
