@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <title>Delhi Air Quality Dashboard - Tale Template</title>
+
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/templatemo-tale-seo-agency.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js@latest/dist/plotly.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+
+    <style>
+        /* Define color variables for easy styling */
+        :root {
+            --tale-orange: #f36715;
+            --tale-dark-blue: #1a364d;
+            --tale-light-bg: #f7f7f7;
+            --tale-text-color: #4a4a4a;
+        }
+
+        body {
+            background-color: var(--tale-light-bg);
+            font-family: 'Open Sans', sans-serif;
+            color: var(--tale-text-color);
+        }
+
+        /* Adjustments for the dashboard layout */
+        .main-banner {
+            background-image: url('assets/images/banner-bg.jpg'); /* Use a placeholder or the original image */
+            background-size: cover;
+            background-position: center;
+            padding-top: 150px;
+            padding-bottom: 150px;
+        }
+
+        .caption h6 {
+            color: var(--tale-orange);
+            font-weight: 600;
+        }
+
+        .caption h4 {
+            color: white;
+        }
+
+        .caption h4 em, .caption h4 span {
+            color: var(--tale-orange);
+            font-style: normal;
+        }
+
+        .line-dec {
+            background-color: var(--tale-orange);
+            height: 3px;
+            width: 50px;
+            margin-bottom: 20px;
+        }
+        
+        /* Custom Dashboard Styles */
+        #metrics-container .col-lg-3, #metrics-container .col-sm-6 {
+            padding: 15px; /* Spacing between metric cards */
+        }
+
+        .metric-card {
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            min-height: 150px;
+        }
+        .metric-card-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--tale-dark-blue);
+            margin-bottom: 0.5rem;
+        }
+        .metric-card-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--tale-orange);
+            margin: 0.3rem 0;
+        }
+        .metric-card-delta {
+            font-size: 0.8rem;
+            color: var(--tale-text-color);
+            font-weight: 500;
+        }
+        
+        /* Tabs Styling to match template links */
+        #dashboard-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        #dashboard-tabs .nav-link {
+            color: var(--tale-dark-blue);
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+        #dashboard-tabs .nav-link.active {
+            background-color: var(--tale-orange);
+            color: white;
+            border-color: var(--tale-orange);
+        }
+
+        /* Content Card for Sections (Dashboard tabs content) */
+        .content-card {
+            background-color: #FFFFFF;
+            padding: 2.5rem 2rem;
+            border-radius: 0 15px 15px 15px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section Heading Reuse (for the dashboard tabs) */
+        .section-heading h2 {
+            font-weight: 800;
+            color: var(--tale-dark-blue);
+        }
+        .section-heading h2 em, .section-heading h2 span {
+            color: var(--tale-orange);
+            font-style: normal;
+        }
+        .section-heading .line-dec {
+            margin: 0.5rem 0 1rem 0;
+        }
+        
+        /* Button Styling (orange-button class from template) */
+        .orange-button {
+            background-color: var(--tale-orange) !important;
+            color: white !important;
+            border-radius: 20px !important;
+            padding: 12px 25px !important;
+            font-weight: 600 !important;
+            border: none !important;
+            box-shadow: 0 5px 15px rgba(243, 103, 21, 0.4);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .orange-button:hover {
+            background-color: #d85c14 !important;
+            transform: translateY(-1px);
+        }
+        
+        /* Map and Plot container styles */
+        #aqi-map-container, #forecast-chart, #analytics-chart-1, #analytics-chart-2 {
+            min-height: 400px;
+            border-radius: 8px;
+        }
+        
+        .alert-info {
+            border-left: 5px solid var(--tale-orange);
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff8f5; /* Light orange background */
+            color: var(--tale-dark-blue);
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <div class="pre-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-sm-9">
+                    <div class="left-info">
+                        <ul id="pre-header-info">
+                            <li><a href="#"><i class="fa fa-phone"></i>+000 1234 5678</a></li>
+                            <li><a href="#"><i class="fa fa-envelope"></i>data@aqidashboard.com</a></li>
+                            <li><a href="#"><i class="fa fa-map-marker"></i>New Delhi, India</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-sm-3">
+                    <div class="social-icons">
+                        <ul>
+                            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+                            <li><a href="#"><i class="fab fa-google-plus"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header class="header-area header-sticky">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <a href="index.html" class="logo">
+                            <img src="assets/images/logo.png" alt="Tale SEO Agency Logo" style="max-width: 112px;">
+                        </a>
+                        <ul class="nav">
+                            <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+                            <li class="scroll-to-section"><a href="#dashboard-section">Dashboard</a></li>
+                            <li class="scroll-to-section"><a href="#contact">Contact</a></li>
+                        </ul>
+                        <a class='menu-trigger'>
+                            <span>Menu</span>
+                        </a>
+                        </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="main-banner" id="top">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="caption header-text">
+                        <h6>DELHI AIR QUALITY MONITORING</h6>
+                        <div class="line-dec"></div>
+                        <h4>Dive <em>Into The AQI</em> Data <span>With Tale</span></h4>
+                        <p id="last-update-text">
+                            Providing real-time Air Quality Index (AQI) data for the Delhi NCR region. 
+                            <span id="last-updated-time">Data loading...</span>
+                        </p>
+                        <div class="main-button scroll-to-section"><a href="#dashboard-section" class="orange-button">View Live Dashboard</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="services section" id="services">
+        <div class="container">
+            <div class="row" id="metrics-container">
+                <div class="col-lg-12 text-center">
+                    <p style="color: var(--tale-dark-blue);">Loading real-time metrics...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="projects section" id="dashboard-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-heading">
+                        <h2>Explore <em>Data &</em> <span>Analytics</span></h2>
+                        <div class="line-dec"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="nav nav-pills" id="dashboard-tabs" role="tablist">
+                        <li class="nav-item" role="presentation"><a class="nav-link active" id="map-tab-link" data-bs-toggle="pill" href="#map-tab" role="tab">🗺️ Live Map</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" id="alerts-tab-link" data-bs-toggle="pill" href="#alerts-tab" role="tab">🔔 Alerts & Health</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" id="analytics-tab-link" data-bs-toggle="pill" href="#analytics-tab" role="tab">📊 Analytics</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" id="sms-tab-link" data-bs-toggle="pill" href="#sms-tab" role="tab">📱 SMS Alerts</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" id="forecast-tab-link" data-bs-toggle="pill" href="#forecast-tab" role="tab">📈 Forecast</a></li>
+                    </ul>
+
+                    <div class="tab-content content-card" id="dashboard-tab-content">
+
+                        <div class="tab-pane fade show active" id="map-tab" role="tabpanel">
+                            <h3 class="section-heading">Live Map: Station Data</h3>
+                            <div class="line-dec"></div>
+                            <div id="aqi-map-legend" class="alert-info"></div>
+                            <div id="aqi-map-container" style="height: 500px; border-radius: 10px;"></div>
+                        </div>
+
+                        <div class="tab-pane fade" id="alerts-tab" role="tabpanel">
+                            <h3 class="section-heading">Health Alerts & Recommendations</h3>
+                            <div class="line-dec"></div>
+                            <div id="alerts-content">Loading alerts...</div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="analytics-tab" role="tabpanel">
+                            <h3 class="section-heading">Data Analytics</h3>
+                            <div class="line-dec"></div>
+                            <div class="row">
+                                <div class="col-lg-6" id="analytics-chart-1"></div>
+                                <div class="col-lg-6" id="analytics-chart-2"></div>
+                            </div>
+                            <h4 style="margin-top: 30px; color: var(--tale-dark-blue);">Full Station Data</h4>
+                            <div id="full-data-table"></div>
+                        </div>
+
+                        <div class="tab-pane fade" id="sms-tab" role="tabpanel">
+                            <h3 class="section-heading">Secure SMS Alert Subscription</h3>
+                            <div class="line-dec"></div>
+                            <p>Get real-time air quality and weather alerts for your location via SMS. Requires Backend API.</p>
+                            <form id="alert-form" action="#" method="post">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <fieldset>
+                                            <label for="location-name">Location Name</label>
+                                            <input type="text" id="location-name" placeholder="e.g., Connaught Place" required>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <fieldset>
+                                            <label for="phone-number-input">Phone Number (E.164 Format)</label>
+                                            <input type="text" id="phone-number-input" placeholder="+91XXXXXXXXXX" required>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <fieldset>
+                                            <label for="alert-message-preview">Alert Message Preview</label>
+                                            <textarea id="alert-message-preview" placeholder="Message will be generated here..." readonly></textarea>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <fieldset>
+                                            <button type="submit" id="form-submit" class="orange-button">Send Alert Now</button>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="forecast-tab" role="tabpanel">
+                             <h3 class="section-heading">24-Hour AQI Forecast (Simulated)</h3>
+                            <div class="line-dec"></div>
+                            <p>This graph shows a simulated AQI trend for the next 24 hours.</p>
+                            <div id="forecast-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="contact-us section" id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="contact-us-content">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div id="map">
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12469.776493332698!2d-80.14036379941481!3d25.907788681148624!2m3!1f357.26927939317244!2f20.870722720054623!3f0!3m2!1i1024!2i768!4f35!3m3!1m2!1s0x88d9add4b4ac788f%3A0xe77469d09480fcdb!2sSunny%20Isles%20Beach!5e1!3m2!1sen!2sth!4v1642869952544!5m2!1sen!2sth" width="100%" height="670px" frameborder="0" style="border:0; border-radius: 23px;" allowfullscreen=""></iframe>
+                                </div>
+                            </div>
+                            <div class="col-lg-8">
+                                <form id="main-contact-form" action="" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="section-heading">
+                                                <h2><em>Contact Us</em> & Get In <span>Touch</span></h2>
+                                                <div class="line-dec"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6"><fieldset><input type="name" name="name" id="name" placeholder="Your Name..." autocomplete="on" required></fieldset></div>
+                                        <div class="col-lg-6"><fieldset><input type="surname" name="surname" id="surname" placeholder="Your Surname..." autocomplete="on" required></fieldset></div>
+                                        <div class="col-lg-6"><fieldset><input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..." required=""></fieldset></div>
+                                        <div class="col-lg-6"><fieldset><input type="subject" name="subject" id="subject" placeholder="Subject..." autocomplete="on" ></fieldset></div>
+                                        <div class="col-lg-12"><fieldset><textarea name="message" id="message-body" placeholder="Your Message"></textarea></fieldset></div>
+                                        <div class="col-lg-12"><fieldset><button type="submit" id="main-form-submit" class="orange-button">Send Message Now</button></fieldset></div>
+                                    </div>
+                                </form>
+                                <div class="more-info">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="info-item">
+                                                <i class="fa fa-phone"></i>
+                                                <h4><a href="#">010-020-0340</a></h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="info-item">
+                                                <i class="fa fa-envelope"></i>
+                                                <h4><a href="#">info@company.com</a></h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="info-item">
+                                                <i class="fa fa-map-marker"></i>
+                                                <h4><a href="#">Sunny Isles Beach, FL 33160, United States</a></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <div class="col-lg-12">
+                <p>Copyright © 2036 <a href="#">Tale SEO Agency</a>. All rights reserved.
+
+                    <br>Design: <a href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> <script src="assets/js/isotope.min.js"></script>
+    <script src="assets/js/owl-carousel.js"></script>
+    <script src="assets/js/tabs.js"></script>
+    <script src="assets/js/popup.js"></script>
+    <script src="assets/js/custom.js"></script>
+
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>
